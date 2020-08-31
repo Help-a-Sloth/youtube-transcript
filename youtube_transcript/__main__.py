@@ -3,8 +3,15 @@ from .transcript import *
 
 parser = argparse.ArgumentParser(
 			prog="youtube-transcript",
-			description="sas",
+			description="A CLI to provide automated scraping of youtube transcript using a headless browser from videos and playlists.",
 			epilog="Thanks for Using.")
+
+parser.add_argument(
+					'--path',
+					type=str,
+					default=".",
+					help="Path where prepared transcript has to be saved."					
+					)
 
 parser.add_argument(
 					'-v',
@@ -26,12 +33,12 @@ args = parser.parse_args()
 if args.video!=None:
 	
 	yt_obj = YoutubeTranscript()
-	yt_obj.transcript_video( args.video )
+	yt_obj.transcript_video( args.video, args.path )
 
 elif args.playlist!=None:
 	
 	yt_obj = YoutubeTranscript()
-	yt_obj.transcript_playlist( args.playlist )
+	yt_obj.transcript_playlist( args.playlist, args.path )
 	
 else:
 	raise( 

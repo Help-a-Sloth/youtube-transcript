@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 
 import time
 import re
-
+import os
 
 def format_title(raw_title):
 
@@ -51,13 +51,13 @@ class YoutubeTranscript():
 			
 			raw_title = title_element.get_attribute("title")
 
-			# formated_title = format_title( raw_title )
+			formated_title = format_title( raw_title )
 
 			all_links.append( video_link )
-			all_titles.append( raw_title )
+			all_titles.append( formated_title )
 
 
-		with open(playlist_filename,'w') as file:
+		with open( playlist_filename, 'w') as file:
 
 			for i in range(len(all_links)):
 				file.writelines(all_links[i]+"<sep>"+all_titles[i]+"\n")
@@ -65,9 +65,17 @@ class YoutubeTranscript():
 
 		return all_titles,all_links	
 
-	def transcript_video(self,url,filename):
+	def transcript_video(self,url,path,filename=None):
 
+		print("Loading the URL - {}".format(url),end="\r")
 		self.browser.get( url )
+		
+		print("Loaded the URL - {}".format(url))
+		print("Attempting to scrape transcript ...",end="\r")
+
+		if filename is None:
+			video_title = self.browser.find_element_by_tag_name("title")
+			filename = format_title( video_title.get_attribute("innerText") )
 
 		try:
 			options_btn = self.wait.until( 
@@ -110,17 +118,18 @@ class YoutubeTranscript():
 			text_part = each_part.get_attribute("innerText")+" "
 			whole_transcript = whole_transcript+text_part
 
-		with open("{}.txt".format(filename),'w') as file:
+		save_path = os.path.join(path,"{}.txt".format(filename))
+		with open( save_path,'w') as file:
 			file.write( whole_transcript )
 			file.close()
 
 		print("Transcript collected from - {}".format(url))
 
-	def transcript_playlist(playlist_url):
+	def transcript_playlist(self, playlist_url, path):
 
-		titles,links = prep_playlist(playlist_url)
+		titles,links = self.prep_playlist(playlist_url)
 		for i in range( len(titles) ):
-			transcript_video( links[i], titles[i])
+			self.transcript_video( links[i], path, titles[i])
 
 		print("All transcripts of playlist collected.")
 
