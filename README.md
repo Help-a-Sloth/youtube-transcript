@@ -16,10 +16,12 @@ But if you are looking for quick solution for a some videos or a playlist, this 
 **Example -**
 
 For a video -
-	`python -m youtube_transcript -v=VIDEO_URL`
+
+    python -m youtube_transcript -v=VIDEO_URL
 
 For a playlist -
-	`python -m youtube_transcript -p=PLAYLIST_URL`
+
+    python -m youtube_transcript -p=PLAYLIST_URL
 	
 	
 **Arguments -**
