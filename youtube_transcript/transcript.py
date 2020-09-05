@@ -10,11 +10,18 @@ import os
 
 def format_title(raw_title):
 
+	"""
+		Remove alphanumeric character and replace spaces with underscore
+		Arguments -
+		`raw_title` : Title of video in html header
+		Returns- Formatted Title
+	"""
+
 	stripped_str = raw_title.strip()
 	alphanum_str = re.sub("[^0-9a-zA-Z ]+", "", stripped_str.strip())
-	formated_title = re.sub(" +", "_", alphanum_str)
+	formatted_title = re.sub(" +", "_", alphanum_str)
 
-	return formated_title
+	return formatted_title
 
 class YoutubeTranscript():
 
@@ -24,6 +31,7 @@ class YoutubeTranscript():
 		
 		self.base_url = 'https://www.youtube.com'
 
+		# Start the selenium browser
 		self.browser = webdriver.Chrome()
 
 		DELAY=20
@@ -31,6 +39,15 @@ class YoutubeTranscript():
 
 	def prep_playlist(self,playlist_url):
 
+		"""
+			Prepare a text file of video links and formatted title in a playlist
+			Arguments -
+			`playlist_url` - Url of a valid youtube playlist,
+							Eg. https://www.youtube.com/playlist?list=*
+			Returns : list of Links, list of formatted titles in given playlist
+		"""
+
+		# Filename contains datetime information
 		datetime = time.strftime("%d_%b_%H_%M", time.localtime() )
 		playlist_filename = "playlist_yts_{}.txt".format(datetime)
 
@@ -51,10 +68,10 @@ class YoutubeTranscript():
 			
 			raw_title = title_element.get_attribute("title")
 
-			formated_title = format_title( raw_title )
+			formatted_title = format_title( raw_title )
 
 			all_links.append( video_link )
-			all_titles.append( formated_title )
+			all_titles.append( formatted_title )
 
 
 		with open( playlist_filename, 'w') as file:
@@ -66,6 +83,12 @@ class YoutubeTranscript():
 		return all_titles,all_links	
 
 	def transcript_video(self,url,path,filename=None):
+
+		"""
+			Scrape and Save transcript of a video
+			`url` - URL of video that has transcript,
+			`path` - Relative path to save text file of transcript
+		"""
 
 		print("Loading the URL - {}".format(url),end="\r")
 		self.browser.get( url )
@@ -126,6 +149,10 @@ class YoutubeTranscript():
 		print("Transcript collected from - {}".format(url))
 
 	def transcript_playlist(self, playlist_url, path):
+
+		"""
+			Create transcript text files for each video in playlist
+		"""
 
 		titles,links = self.prep_playlist(playlist_url)
 		for i in range( len(titles) ):
